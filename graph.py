@@ -57,7 +57,12 @@ class Graph:
 def read_graph_from_file(file_name):
     f = open(file_name, "r")
     content = f.read().split('\n')
-    graph=Graph(len(content))
+    verticies = set()
+    for row in content:
+        edge = row.split(' ')
+        verticies.add(int(edge[0]))
+        verticies.add(int(edge[1]))
+    graph=Graph(len(verticies))
     for row in content:
         edge = row.split(' ')
         graph.add_edge(int(edge[0]),int(edge[1]),int(edge[2])) # 3rd param might be float.
