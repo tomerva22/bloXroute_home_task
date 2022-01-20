@@ -61,14 +61,14 @@ class Graph:
         print(self.shortest_path)
 
     # A function to creates the shortest path string
-    def create_path_string(self, j):
+    def create_path_string(self, dst):
         # if j is last dijkstra start_vertex
-        if self.routes[j] == None :
-            self.shortest_path += str(j) 
+        if self.routes[dst] == None :
+            self.shortest_path += str(dst) 
             return
-        self.create_path_string(self.routes[j])
-        if j in self.nodes[self.routes[j]].edges.keys():
-            self.shortest_path += ' -- (' + str(self.nodes[self.routes[j]].edges[j].weight) + ') --> ' + str(j)
+        self.create_path_string(self.routes[dst])
+        if dst in self.nodes[self.routes[dst]].edges.keys():
+            self.shortest_path += ' -- (' + str(self.nodes[self.routes[dst]].edges[dst].weight) + ') --> ' + str(dst)
 
     def update_edge_weight(self, src, dst, new_weight):
         if not src in self.nodes:
