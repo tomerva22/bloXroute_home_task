@@ -28,6 +28,6 @@ if __name__=="__main__":
     g3.dijkstra('n0')
     g3.printSolution('n1') 
     # empty graph
-    g4 = graph.read_graph_from_file("test_empty_graph.txt")
-    g4.dijkstra('n0')
-    g4.printSolution('n1')
+    #g4 = graph.read_graph_from_file("test_empty_graph.txt")
+    #g4.dijkstra('n0')
+    #g4.printSolution('n1')
