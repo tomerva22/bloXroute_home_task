@@ -15,7 +15,7 @@ class Node:
         self.name = name
         self.edges = {}
 
-    # used to insert an edge or update an edge weight
+    # used to insert an edge
     def add_neighbor(self, edge):
         self.edges[edge.dst] = edge
 
