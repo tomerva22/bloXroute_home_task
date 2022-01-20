@@ -22,14 +22,14 @@ class Node:
     
 class Graph:
     # A constructor to create a graph
-    def __init__(self, edges):
-        self.num_of_nodes = len(edges)
+    def __init__(self):#, edges
+        #self.num_of_nodes = len(edges)
         self.nodes = {}
         # there is no reason to hold edges list for this task, I've done it to represent as many small obj as possible
         # if we want to add it we should add it to init and add_edge
         # self.edges = []
         
-    
+    # add node to the graph
     def add_node(self, name):
         if name in self.nodes:
             print("Node already exists, no action is done.")
@@ -71,7 +71,15 @@ class Graph:
             self.shortest_path += ' -- (' + str(self.nodes[self.routes[j]].edges[j].weight) + ') --> ' + str(j)
 
     def update_edge_weight(self, src, dst, new_weight):
-        # not checking overflow since its not req to task.
+        if not src in self.nodes:
+            print(src + " not in the graph.")
+            return
+        if not dst in self.nodes:
+            print(dst + " not in the graph.")
+            return
+        if not dst in self.nodes[src].edges:
+            print("The edge (" + src + "," + dst + ") not in the graph.")
+            return
         self.nodes[src].edges[dst].update_weight(new_weight)
         #pointers test
         #for edge in self.edges:
@@ -112,7 +120,6 @@ class Graph:
 def read_graph_from_file(file_name):
     f = open(os.path.join(os.getcwd(), file_name), "r")
     content = f.read().split('\n')
-    #verticies = set()
     edges = {}
     for row in content:
         node_edges = row.split(' ')
@@ -124,13 +131,12 @@ def read_graph_from_file(file_name):
         if not src in edges:
             edges[src] = {}
         edges[src][dst] = int(weight)
-    graph=Graph(edges)
+    graph=Graph()
     for src_node, node_edges in edges.items():
         if not src_node in graph.nodes:
             graph.add_node(src_node)
         for dst_node, weight in node_edges.items():
             if not dst_node in graph.nodes:
-                # this if statement is not required for fully connected graph, only if we have a node with in-edge only.
                 graph.add_node(dst_node)
             edge = Edge(src_node, dst_node, weight)
             graph.add_edge(edge)
