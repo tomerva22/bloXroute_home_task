@@ -120,7 +120,7 @@ class Graph:
 def read_graph_from_file(file_name):
     f = open(os.path.join(os.getcwd(), file_name), "r")
     content = f.read().split('\n')
-    edges = {}
+    graph=Graph()
     for row in content:
         node_edges = row.split(' ')
         if row == '':
@@ -128,16 +128,10 @@ def read_graph_from_file(file_name):
         src = node_edges[0]
         dst = node_edges[1]
         weight = node_edges[2]
-        if not src in edges:
-            edges[src] = {}
-        edges[src][dst] = int(weight)
-    graph=Graph()
-    for src_node, node_edges in edges.items():
-        if not src_node in graph.nodes:
-            graph.add_node(src_node)
-        for dst_node, weight in node_edges.items():
-            if not dst_node in graph.nodes:
-                graph.add_node(dst_node)
-            edge = Edge(src_node, dst_node, weight)
-            graph.add_edge(edge)
+        if not src in graph.nodes:
+            graph.add_node(src)
+        if not dst in graph.nodes:
+            graph.add_node(dst)
+        edge = Edge(src, dst, int(weight))
+        graph.add_edge(edge)
     return graph
