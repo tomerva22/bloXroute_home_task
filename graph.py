@@ -62,7 +62,7 @@ class Graph:
 
     # A function to creates the shortest path string
     def create_path_string(self, dst):
-        # if j is last dijkstra start_vertex
+        # if dst is last dijkstra start_vertex
         if self.routes[dst] == None :
             self.shortest_path += str(dst) 
             return
