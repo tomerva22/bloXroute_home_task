@@ -51,17 +51,17 @@ class Graph:
     # A function to print the shortest path from last dijkstra start_vertex to dst
     def printSolution(self, dst):#, src
         self.shortest_path = ''
+        if (not dst in self.routes) and dst in self.nodes:
+            print("No available path to node " + dst + ".")
+            return
+        if not dst in self.routes:
+            print("Node " + dst + " not in this graph.")
+            return
         self.create_path_string(dst)
         print(self.shortest_path)
 
     # A function to creates the shortest path string
     def create_path_string(self, j):
-        if (not j in self.routes) and j in self.nodes:
-            print("No available path to node " + j + ".")
-            return
-        if not j in self.routes:
-            print("Node " + j + " not in this graph.")
-            return
         # if j is last dijkstra start_vertex
         if self.routes[j] == None :
             self.shortest_path += str(j) 
