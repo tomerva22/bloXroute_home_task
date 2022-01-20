@@ -1,16 +1,46 @@
 from queue import PriorityQueue
+import os
 
+class Edge:
+    def __init__(self, src, dst, weight):
+        self.src = src
+        self.dst = dst
+        self.weight = weight
+
+    def update_weight(self, new_weight):
+        self.weight = new_weight
+
+class Node:
+    def __init__(self, name):
+        self.name = name
+        self.edges = {}
+
+    # used to insert an edge or update an edge weight
+    def add_neighbor(self, edge):
+        self.edges[edge.dst] = edge
+
+    
 class Graph:
     # A constructor to create a graph
-    def __init__(self, num_of_vertices):
-        self.v = num_of_vertices
-        self.edges = [[-1 for i in range(num_of_vertices)] for j in range(num_of_vertices)]
-        self.visited = []
+    def __init__(self, edges):
+        self.num_of_nodes = len(edges)
+        self.nodes = {}
+        # there is no reason to hold edges list for this task, I've done it to represent as many small obj as possible
+        # if we want to add it we should add it to init and add_edge
+        # self.edges = []
+        
     
+    def add_node(self, name):
+        if name in self.nodes:
+            print("Node already exists, no action is done.")
+        else:
+            new_node = Node(name)
+            self.nodes[new_node.name] = new_node
+
     # A function to add an edge to the graph
-    def add_edge(self, u, v, weight):
-        self.edges[u][v] = weight
-        self.edges[v][u] = weight
+    def add_edge(self, edge):
+        self.nodes[edge.src].add_neighbor(edge)
+        #self.edges.append(edge)
 
     # A function to print the shortest path from last dijkstra start_vertex to dst
     def printSolution(self, dst):#, src
@@ -20,33 +50,52 @@ class Graph:
 
     # A function to creates the shortest path string
     def create_path_string(self, j):
+        if (not j in self.routes) and j in self.nodes:
+            print("No available path to node " + j + ".")
+            return
+        if not j in self.routes:
+            print("Node " + j + " not in this graph.")
+            return
         # if j is last dijkstra start_vertex
-        if self.routes[j] == -1 :
+        if self.routes[j] == None :
             self.shortest_path += str(j) 
             return
         self.create_path_string(self.routes[j])
-        self.shortest_path += ' -- (' + str(self.edges[j][self.routes[j]]) + ') --> ' + str(j)
+        if j in self.nodes[self.routes[j]].edges.keys():
+            self.shortest_path += ' -- (' + str(self.nodes[self.routes[j]].edges[j].weight) + ') --> ' + str(j)
+
+    def update_edge_weight(self, src, dst, new_weight):
+        # not checking overflow since its not req to task.
+        self.nodes[src].edges[dst].update_weight(new_weight)
+        #pointers test
+        #for edge in self.edges:
+        #    if edge.src == src and edge.dst == dst:
+        #        print(self.nodes[src].edges[dst].weight == edge.weight)
 
     # The classic Dijkstra algorithm
     def dijkstra(self, start_vertex):
-        D = {v:float('inf') for v in range(self.v)}
+        if not start_vertex in self.nodes:
+            print("Node " + start_vertex + " not in this graph.")
+            self.routes = {}
+            return None
+        D = {node:float('inf') for node in self.nodes}
         D[start_vertex] = 0
 
         pq = PriorityQueue()
         pq.put((0, start_vertex))
         
-        self.routes = [-1] * self.v
+        self.routes = {start_vertex: None}#node:None for node in self.nodes
+        self.visited = []
 
         while not pq.empty():
             (dist, current_vertex) = pq.get()
             self.visited.append(current_vertex)
 
-            for neighbor in range(self.v):
-                if self.edges[current_vertex][neighbor] != -1:
-                    distance = self.edges[current_vertex][neighbor]
+            for neighbor,edge in self.nodes[current_vertex].edges.items():
+                if self.nodes[current_vertex].edges[neighbor] != None:
                     if neighbor not in self.visited:
                         old_cost = D[neighbor]
-                        new_cost = D[current_vertex] + distance
+                        new_cost = D[current_vertex] + edge.weight
                         if new_cost < old_cost:
                             pq.put((new_cost, neighbor))
                             D[neighbor] = new_cost
@@ -55,15 +104,28 @@ class Graph:
 
 # A function to create a graph from a file
 def read_graph_from_file(file_name):
-    f = open(file_name, "r")
+    f = open(os.path.join(os.getcwd(), file_name), "r")
     content = f.read().split('\n')
-    verticies = set()
+    #verticies = set()
+    edges = {}
     for row in content:
-        edge = row.split(' ')
-        verticies.add(int(edge[0]))
-        verticies.add(int(edge[1]))
-    graph=Graph(len(verticies))
-    for row in content:
-        edge = row.split(' ')
-        graph.add_edge(int(edge[0]),int(edge[1]),int(edge[2])) # 3rd param might be float.
+        node_edges = row.split(' ')
+        if row == '':
+            break
+        src = node_edges[0]
+        dst = node_edges[1]
+        weight = node_edges[2]
+        if not src in edges:
+            edges[src] = {}
+        edges[src][dst] = int(weight)
+    graph=Graph(edges)
+    for src_node, node_edges in edges.items():
+        if not src_node in graph.nodes:
+            graph.add_node(src_node)
+        for dst_node, weight in node_edges.items():
+            if not dst_node in graph.nodes:
+                # this if statement is not required for fully connected graph, only if we have a node with in-edge only.
+                graph.add_node(dst_node)
+            edge = Edge(src_node, dst_node, weight)
+            graph.add_edge(edge)
     return graph
