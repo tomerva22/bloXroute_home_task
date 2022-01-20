@@ -39,6 +39,12 @@ class Graph:
 
     # A function to add an edge to the graph
     def add_edge(self, edge):
+        if not edge.src in self.nodes:
+            print(edge.src + " not in the graph.")
+            return
+        if not edge.dst in self.nodes:
+            print(edge.dst + " not in the graph.")
+            return
         self.nodes[edge.src].add_neighbor(edge)
         #self.edges.append(edge)
 
